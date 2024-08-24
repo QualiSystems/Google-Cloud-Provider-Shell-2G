@@ -1,0 +1,126 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+metadata:
+  template_name: GoogleCloudProviderShell2G
+  template_author: Quali
+  template_version: 1.0.0
+  template_icon: GCP.png
+
+description: >
+  sample deployment path file
+
+imports:
+  - cloudshell_standard: cloudshell_cloud_provider_standard_1_0_0.yaml
+
+# Google Cloud Instance From Public Image
+# Google Cloud Instance From Custom Image
+# Google Cloud Instance From Template
+# Google Cloud Instance From Snapshot ????
+# Google Cloud Instance From Disk ????
+
+
+
+node_types:
+  vendor.resource.Google Cloud Instance From Public Image:
+    derived_from: cloudshell.nodes.CustomDeploymentOption
+    description: Create a single VM instance based on Public Image from scratch
+    properties:
+      Image Project:
+        type: string
+        description: "The project of the image to be used for deploying the app."
+        default: ""
+        tags: [user_input] # editable_only_in_app_template
+      Image Id:
+        type: string
+        description: "The id of the image to be used for deploying the app."
+        default: ""
+        tags: [user_input] # editable_only_in_app_template
+      Image Source:
+        type: string
+        description: "The source of the image. Supported values: 'public' or 'private'. Use 'image' for private source not 'machine image'"
+        default: "public"
+        tags: [ user_input ]
+        constraints:
+          - valid_values: [ public, private ]
+      Machine Type:
+        type: string
+        description: "The size of the instance. Can be one of the pre-defined ones or a custom one."
+        default: "n1-standard-1"
+        #constraints:
+        #  - valid_values: [f1-micro, g1-small, n1-standard-1, n1-standard-2, n1-standard-4, n1-standard-8]
+        tags: [user_input] # editable_only_in_app_template
+      Disk Type:
+        type: string
+        description: The type of the disk drive. Standard or SSD.
+        default: "Standard"
+        constraints:
+          - valid_values: [Standard, SSD]
+        tags: [user_input] # editable_only_in_app_template
+      Disk Size:
+        type: string
+        description: "The size of the disk in GB."
+        default: "10"
+        tags: [user_input] # editable_only_in_app_template
+    artifacts:
+      icon:
+        file: GCP.png
+        type: tosca.artifacts.File
+
+  vendor.resource.Google Cloud Instance From Custom Image:
+    derived_from: cloudshell.nodes.CustomDeploymentOption
+    description: Create a single VM instance based on Custom Image from scratch
+    properties:
+      Image Project:
+        type: string
+        description: "The project of the image to be used for deploying the app."
+        default: ""
+        tags: [user_input] # editable_only_in_app_template
+      Image Id:
+        type: string
+        description: "The id of the image to be used for deploying the app."
+        default: ""
+        tags: [user_input] # editable_only_in_app_template
+      Image Source:
+        type: string
+        description: "The source of the image. Supported values: 'public' or 'private'. Use 'image' for private source not 'machine image'"
+        default: "public"
+        tags: [ user_input ]
+        constraints:
+          - valid_values: [ public, private ]
+      Machine Type:
+        type: string
+        description: "The size of the instance. Can be one of the pre-defined ones or a custom one."
+        default: "n1-standard-1"
+        #constraints:
+        #  - valid_values: [f1-micro, g1-small, n1-standard-1, n1-standard-2, n1-standard-4, n1-standard-8]
+        tags: [user_input] # editable_only_in_app_template
+      Disk Type:
+        type: string
+        description: The type of the disk drive. Standard or SSD.
+        default: "Standard"
+        constraints:
+          - valid_values: [Standard, SSD]
+        tags: [user_input] # editable_only_in_app_template
+      Disk Size:
+        type: string
+        description: "The size of the disk in GB."
+        default: "10"
+        tags: [user_input] # editable_only_in_app_template
+    artifacts:
+      icon:
+        file: GCP.png
+        type: tosca.artifacts.File
+
+  vendor.resource.Google Cloud Instance From Template:
+    derived_from: cloudshell.nodes.CustomDeploymentOption
+    description: Create a single VM instance from an existing template
+    properties:
+      Template Name:
+        type: string
+        description: "The name of the template that should be used"
+        default: ""
+        tags: [user_input] # editable_only_in_app_template
+    artifacts:
+      icon:
+        file: GCP.png
+        type: tosca.artifacts.File

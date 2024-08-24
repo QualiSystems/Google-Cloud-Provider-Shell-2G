@@ -1,0 +1,4 @@
+tox
+pre-commit
+-r test_requirements.txt
+-r src/requirements.txt

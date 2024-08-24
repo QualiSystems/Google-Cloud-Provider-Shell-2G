@@ -1,0 +1,72 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+metadata:
+  template_name: Google Cloud Provider Shell 2G
+  template_author: Quali
+  template_version: 1.0.0
+  template_icon: GCP.png
+
+description: >
+  GCP template will create a GCP resource in CloudShell. Once the GCP is
+  modeled correctly in CloudShell it will be possible to deploy Apps on this GCP.
+
+imports:
+  - cloudshell_standard: cloudshell_cloud_provider_standard_1_0_1.yaml
+
+node_types:
+ vendor.resource.Google Cloud Provider 2G:
+    derived_from: cloudshell.nodes.CustomCloudProvider
+    properties:
+      Region:
+        type: string
+        default: ""
+        description: "The code of the GCP region to be used by this cloud provider
+        resource. For example, 'us-central1'."
+#        constraints:
+#          - valid_values:
+      Credentials Json:
+        type: cloudshell.datatypes.Password
+        default: ""
+        description: ""
+    capabilities:
+      concurrent_command_capability:
+        type: cloudshell.capabilities.SupportConcurrentCommands
+      auto_discovery_capability:
+        type: cloudshell.capabilities.AutoDiscovery
+        properties:        
+          enable_auto_discovery:
+            type: boolean
+            default: true
+          auto_discovery_description:
+            type: string
+            default: "After filling in all the inputs click Start Discovery to complete
+            the cloud provider creation process"
+          inventory_description:
+            type: string
+            default: "GCP template will create a GCP resource in CloudShell.
+            Once the GCP is modeled correctly in CloudShell 
+            it will be possible to deploy Apps on this GCP."
+          hide_address:
+            type: string
+            default: true
+      Region:
+        type: string
+        default: ""
+        description: "The code of the GCP region to be used by this cloud provider
+        resource. For example, 'us-central1'."
+#        constraints:
+#          - valid_values:
+      Credentials Json:
+        type: cloudshell.datatypes.Password
+        default: ""
+        description: ""
+    artifacts:
+      icon:
+        file: GCP.png
+        type: tosca.artifacts.File
+      driver:
+        file: GoogleCloudProviderShell2GDriver.zip
+        type: tosca.artifacts.File
+      deployment:
+        file: Deployments.zip
+        type: tosca.artifacts.File
