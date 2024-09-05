@@ -7,109 +7,149 @@ metadata:
   template_icon: GCP.png
 
 description: >
-  sample deployment path file
+  Description of all deployment paths that can be used from deploying VM instance on GCP.
 
 imports:
-  - cloudshell_standard: cloudshell_cloud_provider_standard_1_0_0.yaml
-
-# Google Cloud Instance From Public Image
-# Google Cloud Instance From Custom Image
-# Google Cloud Instance From Template
-# Google Cloud Instance From Snapshot ????
-# Google Cloud Instance From Disk ????
-
-
+  - cloudshell_standard: cloudshell_cloud_provider_standard_1_0_1.yaml
 
 node_types:
-  vendor.resource.Google Cloud Instance From Public Image:
+  vendor.resource.Google Cloud Instance From Scratch:
     derived_from: cloudshell.nodes.CustomDeploymentOption
     description: Create a single VM instance based on Public Image from scratch
     properties:
-      Image Project:
+      Region:
         type: string
-        description: "The project of the image to be used for deploying the app."
+        default: "Inherited"
+        description: "The code of the GCP region to be used by this cloud provider
+        resource. For example, 'us-central1'."
+        tags: []
+      Zone:
+        type: string
         default: ""
-        tags: [user_input] # editable_only_in_app_template
-      Image Id:
-        type: string
-        description: "The id of the image to be used for deploying the app."
-        default: ""
-        tags: [user_input] # editable_only_in_app_template
-      Image Source:
-        type: string
-        description: "The source of the image. Supported values: 'public' or 'private'. Use 'image' for private source not 'machine image'"
-        default: "public"
-        tags: [ user_input ]
-        constraints:
-          - valid_values: [ public, private ]
+        description: "Deployment area within a region. For example, 'us-central1-a' .
+        Note: zone is selected automatically if only region is specified"
+        tags: [user_input]
       Machine Type:
         type: string
         description: "The size of the instance. Can be one of the pre-defined ones or a custom one."
-        default: "n1-standard-1"
-        #constraints:
-        #  - valid_values: [f1-micro, g1-small, n1-standard-1, n1-standard-2, n1-standard-4, n1-standard-8]
+        default: "Inherited"
         tags: [user_input] # editable_only_in_app_template
+      On Host Maintenance:
+        type: string
+        description: "Behaviour during infrastructure maintenance.
+        Migrate means migrating VM instances to other hardware without downtime "
+        default: "Migrate"
+        constraints:
+          - valid_values: [ Migrate, Terminate ]
+        tags: [user_input]
+      Automatic Restart:
+        type: string
+        description: "Automatically restart VM instances if they are terminated for non-user-initiated reasons"
+        default: "On"
+        constraints:
+          - valid_values: [ On, Off ]
+        tags: [user_input]
+#      Disk Image Type:
+#        type: string
+#        description: "Boot Disks' image type that defines whether public or custom disk image will be used "
+#        default: "Public"
+#        constraints:
+#          - valid_values: [ Public, Custom ]
+#        tags: [user_input]
+      OS Project:
+        type: string
+        description: "Operation System type."
+#        default: "Debian"
+#        constraints:
+#          - valid_values:
+#              - CenOS
+#              - Container Optimized OS
+#              - Debian
+#              - Deep Learning on Linux
+#              - Fedora CoreOS
+#              - HPC VM Image
+#              - openSUSE
+#              - Red Hat Enterprise Linux
+#              - Red Hat Enterprise Linux for SAP
+#              - Rocky Linux
+#              - SQL Server on Windows Server
+#              - SUSE Linux Enterprise BYOS
+#              - SUSE Linux Enterprise Server
+#              - SUSE Linux Enterprise for SAP
+#              - Ubuntu
+#              - Ubuntu Pro
+#              - Windows Server
+        tags: [user_input]
+      Disk Image:
+        type: string
+        description: "Operation System version or build. "
+        default: ""
+        tags: [user_input]
       Disk Type:
         type: string
-        description: The type of the disk drive. Standard or SSD.
+        description: "Boot disk type."
         default: "Standard"
         constraints:
-          - valid_values: [Standard, SSD]
-        tags: [user_input] # editable_only_in_app_template
+          - valid_values: [ Balanced, Extreme, SSD, Standard ]
+        tags: [ user_input ]
       Disk Size:
         type: string
-        description: "The size of the disk in GB."
+        description: "Boot disk size in GB"
         default: "10"
-        tags: [user_input] # editable_only_in_app_template
+        tags: [ user_input ]
+      Disk Deletion Rule:
+        type: string
+        description: "Keep or Delete boot disk during instance deleting."
+        default: "Delete"
+        constraints:
+          - valid_values: [ Keep, Delete ]
+        tags: [ user_input ]
+      IP Forwarding:
+        type: boolean
+        default: ""
+        description: "Custom tags per instance, Comma separated values e.g:
+        tag_name:tag_value1,tag_name2:tag_value2"
+        tags: [ user_input ]
+      Network:
+        type: string
+        default: ""
+        description: "Determines what network traffic the instance can access"
+        tags: [ user_input ]
+      Sub Network:
+        type: string
+        default: ""
+        description: "Assigns the instance an IPv4 address from the subnetwork’s range."
+        tags: [ user_input ]
+      Custom Tags:
+        type: string
+        default: ""
+        description: "Custom tags per instance, Comma separated values e.g:
+        tag_name:tag_value1,tag_name2:tag_value2"
+        tags: [ user_input ]
+      Inbound Ports:
+        type: string
+        default: ""
+        description: "Ports, protocol and source to open inbound traffic from outside
+        of the sandbox. The syntax is
+        port[single/range]:protocol[tcp(default)/udp]:source[cidr] with semi-colon
+        separation. The default source cidr, if not specified, is any (0.0.0.0/0).
+        For example: 80;443:tcp:10.0.0.0/24;200-220:udp;icmp;icmp:10.0.0.0/24"
+        tags: [ user_input ]
+      Autoload:
+        type: boolean
+        description: "Enables the automatic execution of the Autoload command during reservation Setup."
+        default: true
+        tags: [ user_input ]
+      Autogenerated Name:
+        type: boolean
+        description: "If true the name would be generated by the Shell, otherwise it would be the same as App name."
+        default: true
+        tags: [ user_input ]
     artifacts:
       icon:
         file: GCP.png
         type: tosca.artifacts.File
 
-  vendor.resource.Google Cloud Instance From Custom Image:
-    derived_from: cloudshell.nodes.CustomDeploymentOption
-    description: Create a single VM instance based on Custom Image from scratch
-    properties:
-      Image Project:
-        type: string
-        description: "The project of the image to be used for deploying the app."
-        default: ""
-        tags: [user_input] # editable_only_in_app_template
-      Image Id:
-        type: string
-        description: "The id of the image to be used for deploying the app."
-        default: ""
-        tags: [user_input] # editable_only_in_app_template
-      Image Source:
-        type: string
-        description: "The source of the image. Supported values: 'public' or 'private'. Use 'image' for private source not 'machine image'"
-        default: "public"
-        tags: [ user_input ]
-        constraints:
-          - valid_values: [ public, private ]
-      Machine Type:
-        type: string
-        description: "The size of the instance. Can be one of the pre-defined ones or a custom one."
-        default: "n1-standard-1"
-        #constraints:
-        #  - valid_values: [f1-micro, g1-small, n1-standard-1, n1-standard-2, n1-standard-4, n1-standard-8]
-        tags: [user_input] # editable_only_in_app_template
-      Disk Type:
-        type: string
-        description: The type of the disk drive. Standard or SSD.
-        default: "Standard"
-        constraints:
-          - valid_values: [Standard, SSD]
-        tags: [user_input] # editable_only_in_app_template
-      Disk Size:
-        type: string
-        description: "The size of the disk in GB."
-        default: "10"
-        tags: [user_input] # editable_only_in_app_template
-    artifacts:
-      icon:
-        file: GCP.png
-        type: tosca.artifacts.File
 
   vendor.resource.Google Cloud Instance From Template:
     derived_from: cloudshell.nodes.CustomDeploymentOption
@@ -120,6 +160,158 @@ node_types:
         description: "The name of the template that should be used"
         default: ""
         tags: [user_input] # editable_only_in_app_template
+      Region:
+        type: string
+        default: ""
+        description: "The code of the GCP region to be used by this cloud provider
+        resource. For example, 'us-central1'."
+        tags: [user_input]
+      Zone:
+        type: string
+        default: ""
+        description: "Deployment area within a region. For example, 'us-central1-a' .
+        Note: zone is selected automatically if only region is specified"
+        tags: [user_input]
+      Machine Type:
+        type: string
+        description: "The size of the instance. Can be one of the pre-defined ones or a custom one."
+        default: ""
+        tags: [user_input] # editable_only_in_app_template
+      On Host Maintenance:
+        type: string
+        description: "Behaviour during infrastructure maintenance.
+        Migrate means migrating VM instances to other hardware without downtime "
+        default: ""
+        constraints:
+          - valid_values: [ Migrate, Terminate ]
+        tags: [user_input]
+      Automatic Restart:
+        type: string
+        description: "Automatically restart VM instances if they are terminated for non-user-initiated reasons"
+        default: ""
+        constraints:
+          - valid_values: [ On, Off ]
+        tags: [user_input]
+#      Disk Image Type:
+#        type: string
+#        description: "Boot Disks' image type that defines whether public or custom disk image will be used"
+#        default: "Public"
+#        constraints:
+#          - valid_values: [ Public, Custom ]
+#        tags: [user_input]
+      OS Project:
+        type: string
+        description: "Operation System type."
+        default: ""
+        constraints:
+          - valid_values:
+              - CenOS
+              - Container Optimized OS
+              - Debian
+              - Deep Learning on Linux
+              - Fedora CoreOS
+              - HPC VM Image
+              - openSUSE
+              - Red Hat Enterprise Linux
+              - Red Hat Enterprise Linux for SAP
+              - Rocky Linux
+              - SQL Server on Windows Server
+              - SUSE Linux Enterprise BYOS
+              - SUSE Linux Enterprise Server
+              - SUSE Linux Enterprise for SAP
+              - Ubuntu
+              - Ubuntu Pro
+              - Windows Server
+        tags: [user_input]
+      Disk Image:
+        type: string
+        description: "Operation System version or build"
+        default: ""
+        tags: [user_input]
+      Disk Type:
+        type: string
+        description: "Boot disk type"
+        default: ""
+        constraints:
+          - valid_values: [ Balanced, Extreme, SSD, Standard ]
+        tags: [user_input]
+      Disk Size:
+        type: string
+        description: "Boot disk size in GB"
+        default: ""
+        tags: [user_input]
+      Disk Deletion Rule:
+        type: string
+        description: "Keep or Delete boot disk during instance deleting"
+        default: ""
+        constraints:
+          - valid_values: [ Keep, Delete ]
+        tags: [user_input]
+      Custom Tags:
+        type: string
+        default: ""
+        description: "Custom tags per instance, Comma separated values e.g:
+        tag_name:tag_value1,tag_name2:tag_value2"
+        tags: [ user_input ]
+      Inbound Ports:
+        type: string
+        default: ""
+        description: "Ports, protocol and source to open inbound traffic from outside
+        of the sandbox. The syntax is
+        port[single/range]:protocol[tcp(default)/udp]:source[cidr] with semi-colon
+        separation. The default source cidr, if not specified, is any (0.0.0.0/0).
+        For example: 80;443:tcp:10.0.0.0/24;200-220:udp;icmp;icmp:10.0.0.0/24"
+        tags: [ user_input ]
+      Autoload:
+        type: boolean
+        description: "Enables the automatic execution of the Autoload command during reservation Setup."
+        default: true
+        tags: [ user_input ]
+      Autogenerated Name:
+        type: boolean
+        description: "If true the name would be generated by the Shell, otherwise it would be the same as App name."
+        default: true
+        tags: [ user_input ]
+    artifacts:
+      icon:
+        file: GCP.png
+        type: tosca.artifacts.File
+
+
+  vendor.resource.Google Cloud Instance From Machine Image:
+    derived_from: cloudshell.nodes.CustomDeploymentOption
+    description: Create a single VM instance from an existing machine image
+    properties:
+      Machine Image:
+        type: string
+        description: "The name of the existing machine image"
+        default: ""
+        tags: [user_input] # editable_only_in_app_template
+      Custom Tags:
+        type: string
+        default: ""
+        description: "Custom tags per instance, Comma separated values e.g:
+        tag_name:tag_value1,tag_name2:tag_value2"
+        tags: [ user_input ]
+      Inbound Ports:
+        type: string
+        default: ""
+        description: "Ports, protocol and source to open inbound traffic from outside
+        of the sandbox. The syntax is
+        port[single/range]:protocol[tcp(default)/udp]:source[cidr] with semi-colon
+        separation. The default source cidr, if not specified, is any (0.0.0.0/0).
+        For example: 80;443:tcp:10.0.0.0/24;200-220:udp;icmp;icmp:10.0.0.0/24"
+        tags: [ user_input ]
+      Autoload:
+        type: boolean
+        description: "Enables the automatic execution of the Autoload command during reservation Setup."
+        default: true
+        tags: [ user_input ]
+      Autogenerated Name:
+        type: boolean
+        description: "If true the name would be generated by the Shell, otherwise it would be the same as App name."
+        default: true
+        tags: [ user_input ]
     artifacts:
       icon:
         file: GCP.png

@@ -24,6 +24,10 @@ node_types:
         resource. For example, 'us-central1'."
 #        constraints:
 #          - valid_values:
+      Machine Type:
+        type: string
+        default: "n1-standard"
+        description: "Enter a machine type with preset amounts of vCPUs and memory that suit most workloads. For example, 'e2-medium'."
       Credentials Json:
         type: cloudshell.datatypes.Password
         default: ""
@@ -56,6 +60,10 @@ node_types:
         resource. For example, 'us-central1'."
 #        constraints:
 #          - valid_values:
+      Machine Type:
+        type: string
+        default: ""
+        description: "Enter a machine type with preset amounts of vCPUs and memory that suit most workloads. For example, 'e2-medium'."
       Credentials Json:
         type: cloudshell.datatypes.Password
         default: ""
