@@ -14,6 +14,7 @@ from cloudshell.shell.core.session.logging_session import LoggingSessionContext
 from cloudshell.cp.gcp.flows.cleanup_infra_flow import CleanUpGCPInfraFlow
 from cloudshell.cp.gcp.flows.power_flow import GCPPowerFlow
 from cloudshell.cp.gcp.flows.prepare_infra_flow import PrepareGCPInfraFlow
+from cloudshell.cp.gcp.flows.refresh_ip_flow import GCPRefreshIPFlow
 from cloudshell.cp.gcp.flows.vm_details_flow import GCPGetVMDetailsFlow
 from cloudshell.cp.gcp.helpers import constants
 from cloudshell.cp.gcp.models.deployed_app import InstanceFromScratchDeployApp, \
@@ -92,10 +93,19 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
         with LoggingSessionContext(context) as logger:
             logger.info("Starting Power Off command")
             api = CloudShellSessionContext(context).get_api()
-            resource_config = GCPResourceConfig.from_context(context, api=api)
+            resource_config = GCPResourceConfig.from_context(
+                context,
+                api=api
+            )
             resource = context.remote_endpoints[0]
-            actions = GCPDeployedVMRequestActions.from_remote_resource(resource, api)
-            GCPPowerFlow(actions.deployed_app, resource_config).power_on()
+            actions = GCPDeployedVMRequestActions.from_remote_resource(
+                resource,
+                api
+            )
+            GCPPowerFlow(
+                actions.deployed_app,
+                resource_config
+            ).power_on()
 
     def PowerOff(self, context, ports):
         """Called during sandbox's teardown.
@@ -107,10 +117,19 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
         with LoggingSessionContext(context) as logger:
             logger.info("Starting Power Off command")
             api = CloudShellSessionContext(context).get_api()
-            resource_config = GCPResourceConfig.from_context(context, api=api)
+            resource_config = GCPResourceConfig.from_context(
+                context,
+                api=api
+            )
             resource = context.remote_endpoints[0]
-            actions = GCPDeployedVMRequestActions.from_remote_resource(resource, api)
-            GCPPowerFlow(actions.deployed_app, resource_config).power_off()
+            actions = GCPDeployedVMRequestActions.from_remote_resource(
+                resource,
+                api
+            )
+            GCPPowerFlow(
+                actions.deployed_app,
+                resource_config
+            ).power_off()
 
     def orchestration_power_on(self, context, ports):
         pass
@@ -133,14 +152,24 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
         with LoggingSessionContext(context) as logger:
             logger.info("Starting Remote Refresh IP command")
             api = CloudShellSessionContext(context).get_api()
-            resource_config = GCPResourceConfig.from_context(context, api=api)
+            resource_config = GCPResourceConfig.from_context(
+                context,
+                api=api
+            )
             resource = context.remote_endpoints[0]
-            actions = GCPDeployedVMRequestActions.from_remote_resource(resource, api)
-            cancellation_manager = CancellationContextManager(cancellation_context)
-            with ProxmoxHandler.from_config(resource_config) as si:
-                return refresh_ip(
-                    si, actions.deployed_app, resource_config, cancellation_manager
-                )
+            cancellation_manager = CancellationContextManager(
+                cancellation_context
+            )
+            actions = GCPDeployedVMRequestActions.from_remote_resource(
+                resource,
+                api
+            )
+            GCPRefreshIPFlow(
+                actions.deployed_app,
+                resource_config,
+                cancellation_manager
+            ).refresh_ip()
+
 
     def DeleteInstance(self, context, ports):
         pass
@@ -159,18 +188,25 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
             logger.debug(f"Request: {request}")
             api = CloudShellSessionContext(context).get_api()
             resource_config = GCPResourceConfig.from_context(
-                context=context, api=api
+                context=context,
+                api=api
             )
 
-            request_actions = PrepareSandboxInfraRequestActions.from_request(request)
-            cancellation_manager = CancellationContextManager(cancellation_context)
+            request_actions = PrepareSandboxInfraRequestActions.from_request(
+                request
+            )
+            cancellation_manager = CancellationContextManager(
+                cancellation_context
+            )
 
             prepare_sandbox_flow = PrepareGCPInfraFlow(
                 logger=logger,
                 config=resource_config,
             )
 
-            return prepare_sandbox_flow.prepare(request_actions=request_actions)
+            return prepare_sandbox_flow.prepare(
+                request_actions=request_actions
+            )
 
     def CleanupSandboxInfra(self, context, request):
         """
@@ -184,17 +220,22 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
             logger.info("Starting Cleanup Sandbox Infra command...")
             api = CloudShellSessionContext(context).get_api()
             resource_config = GCPResourceConfig.from_context(
-                context=context, api=api
+                context=context,
+                api=api
             )
 
-            request_actions = CleanupSandboxInfraRequestActions.from_request(request)
+            request_actions = CleanupSandboxInfraRequestActions.from_request(
+                request
+            )
 
             cleanup_flow = CleanUpGCPInfraFlow(
                 config=resource_config,
                 logger=logger,
             )
 
-            return cleanup_flow.cleanup(request_actions=request_actions)
+            return cleanup_flow.cleanup(
+                request_actions=request_actions
+            )
 
     def get_inventory(self, context):
         pass
@@ -218,16 +259,20 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
             logger.debug(f"Requests: {requests}")
             api = CloudShellSessionContext(context).get_api()
             resource_config = GCPResourceConfig.from_context(
-                context=context, api=api
+                context=context,
+                api=api
             )
 
             for deploy_app_cls in (
                 InstanceFromScratchDeployApp,
             ):
-                GetVMDetailsRequestActions.register_deployment_path(deploy_app_cls)
+                GetVMDetailsRequestActions.register_deployment_path(
+                    deploy_app_cls
+                )
 
             request_actions = GetVMDetailsRequestActions.from_request(
-                request=requests, cs_api=api
+                request=requests,
+                cs_api=api
             )
 
             # cancellation_manager = CancellationContextManager(cancellation_context)
@@ -237,7 +282,9 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
                 config=resource_config,
             )
 
-            return vm_details_flow.get_vm_details(request_actions=request_actions)
+            return vm_details_flow.get_vm_details(
+                request_actions=request_actions
+            )
 
     def cleanup(self):
         pass
