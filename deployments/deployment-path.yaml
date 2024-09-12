@@ -13,7 +13,7 @@ imports:
   - cloudshell_standard: cloudshell_cloud_provider_standard_1_0_1.yaml
 
 node_types:
-  vendor.resource.Google Cloud Instance From Scratch:
+  vendor.resource.GCP Instance From Scratch:
     derived_from: cloudshell.nodes.CustomDeploymentOption
     description: Create a single VM instance based on Public Image from scratch
     properties:
@@ -161,7 +161,7 @@ node_types:
         type: tosca.artifacts.File
 
 
-  vendor.resource.Google Cloud Instance From Template:
+  vendor.resource.GCP Instance From Template:
     derived_from: cloudshell.nodes.CustomDeploymentOption
     description: Create a single VM instance from an existing template
     properties:
@@ -298,7 +298,7 @@ node_types:
         type: tosca.artifacts.File
 
 
-  vendor.resource.Google Cloud Instance From Machine Image:
+  vendor.resource.GCP Instance From Machine Image:
     derived_from: cloudshell.nodes.CustomDeploymentOption
     description: Create a single VM instance from an existing machine image
     properties:

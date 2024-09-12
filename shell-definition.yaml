@@ -1,7 +1,7 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 
 metadata:
-  template_name: Google Cloud Provider Shell 2G
+  template_name: Google GCP Cloud Provider Shell 2G
   template_author: Quali
   template_version: 1.0.0
   template_icon: GCP.png
@@ -14,7 +14,7 @@ imports:
   - cloudshell_standard: cloudshell_cloud_provider_standard_1_0_1.yaml
 
 node_types:
- vendor.resource.Google Cloud Provider 2G:
+ vendor.resource.Google GCP Cloud Provider 2G:
     derived_from: cloudshell.nodes.CustomCloudProvider
     properties:
       Region:
@@ -53,21 +53,21 @@ node_types:
           hide_address:
             type: string
             default: true
-      Region:
-        type: string
-        default: ""
-        description: "The code of the GCP region to be used by this cloud provider
-        resource. For example, 'us-central1'."
-#        constraints:
-#          - valid_values:
-      Machine Type:
-        type: string
-        default: ""
-        description: "Enter a machine type with preset amounts of vCPUs and memory that suit most workloads. For example, 'e2-medium'."
-      Credentials Json:
-        type: cloudshell.datatypes.Password
-        default: ""
-        description: ""
+          Region:
+            type: string
+            default: ""
+            description: "The code of the GCP region to be used by this cloud provider
+            resource. For example, 'us-central1'."
+    #        constraints:
+    #          - valid_values:
+          Machine Type:
+            type: string
+            default: ""
+            description: "Enter a machine type with preset amounts of vCPUs and memory that suit most workloads. For example, 'e2-medium'."
+          Credentials Json:
+            type: cloudshell.datatypes.Password
+            default: ""
+            description: ""
     artifacts:
       icon:
         file: GCP.png
