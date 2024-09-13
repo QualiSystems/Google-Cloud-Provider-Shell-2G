@@ -6,19 +6,25 @@ from cloudshell.cp.core.cancellation_manager import CancellationContextManager
 from cloudshell.cp.core.request_actions import GetVMDetailsRequestActions, \
     PrepareSandboxInfraRequestActions, CleanupSandboxInfraRequestActions
 
-from cloudshell.cp.core.reservation_info import ReservationInfo
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
 from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionContext
 from cloudshell.shell.core.session.logging_session import LoggingSessionContext
 
+from cloudshell.shell.core.driver_context import AutoLoadDetails
 from cloudshell.cp.gcp.flows.cleanup_infra_flow import CleanUpGCPInfraFlow
+from cloudshell.cp.gcp.flows.deploy_instance import get_deploy_params
 from cloudshell.cp.gcp.flows.power_flow import GCPPowerFlow
 from cloudshell.cp.gcp.flows.prepare_infra_flow import PrepareGCPInfraFlow
 from cloudshell.cp.gcp.flows.refresh_ip_flow import GCPRefreshIPFlow
 from cloudshell.cp.gcp.flows.vm_details_flow import GCPGetVMDetailsFlow
 from cloudshell.cp.gcp.helpers import constants
-from cloudshell.cp.gcp.models.deployed_app import InstanceFromScratchDeployApp, \
-    GCPDeployedVMRequestActions
+from cloudshell.cp.gcp.models.deploy_app import GCPDeployVMRequestActions, \
+    InstanceFromMachineImageDeployApp, InstanceFromTemplateDeployApp, \
+    InstanceFromScratchDeployApp
+from cloudshell.cp.gcp.models.deployed_app import (GCPDeployedVMRequestActions,
+                                                   InstanceFromScratchDeployedApp,
+                                                   InstanceFromTemplateDeployedApp,
+                                                   InstanceFromMachineImageDeployedApp)
 from cloudshell.cp.gcp.resource_conf import GCPResourceConfig
 
 if TYPE_CHECKING:
@@ -46,7 +52,19 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
 
     def __init__(self):
         """Init function."""
-        pass
+        for deploy_app_cls in (
+                InstanceFromScratchDeployApp,
+                InstanceFromTemplateDeployApp,
+                InstanceFromMachineImageDeployApp,
+        ):
+            GCPDeployVMRequestActions.register_deployment_path(deploy_app_cls)
+
+        for deployed_app_cls in (
+                InstanceFromScratchDeployedApp,
+                InstanceFromTemplateDeployedApp,
+                InstanceFromMachineImageDeployedApp,
+        ):
+            GCPDeployedVMRequestActions.register_deployment_path(deployed_app_cls)
 
     def initialize(self, context):
         pass
@@ -61,24 +79,21 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
             logger.info("Starting Deploy command")
             logger.debug(f"Request: {request}")
             cs_api = CloudShellSessionContext(context).get_api()
-            resource_config = ProxmoxResourceConfig.from_context(context, api=cs_api)
+            resource_config = GCPResourceConfig.from_context(
+                context,
+                api=cs_api
+            )
 
             cancellation_manager = CancellationContextManager(cancellation_context)
-            reservation_info = ReservationInfo.from_resource_context(context)
 
-            request_actions = ProxmoxDeployVMRequestActions.from_request(
+            request_actions = GCPDeployVMRequestActions.from_request(
                 request,
                 cs_api
             )
             deploy_flow_class, deploy_instance_type = get_deploy_params(request_actions)
-            api = ProxmoxHandler.from_config(resource_config)
 
-            # with ProxmoxHandler.from_config(resource_config) as api:
             deploy_flow = deploy_flow_class(
-                api=api,
                 resource_config=resource_config,
-                reservation_info=reservation_info,
-                cs_api=cs_api,
                 cancellation_manager=cancellation_manager,
             )
             return deploy_flow.deploy(request_actions=request_actions)
@@ -170,7 +185,6 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
                 cancellation_manager
             ).refresh_ip()
 
-
     def DeleteInstance(self, context, ports):
         pass
 
@@ -238,7 +252,7 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
             )
 
     def get_inventory(self, context):
-        pass
+        return AutoLoadDetails([], [])
 
     def GetAccessKey(self, context, ports):
         pass
@@ -264,7 +278,7 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
             )
 
             for deploy_app_cls in (
-                InstanceFromScratchDeployApp,
+                    InstanceFromScratchDeployApp,
             ):
                 GetVMDetailsRequestActions.register_deployment_path(
                     deploy_app_cls

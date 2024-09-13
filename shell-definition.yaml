@@ -22,16 +22,54 @@ node_types:
         default: ""
         description: "The code of the GCP region to be used by this cloud provider
         resource. For example, 'us-central1'."
-#        constraints:
-#          - valid_values:
+        constraints:
+          - valid_values:
+              - us-central1
+              - us-east1
+              - us-east4
+              - us-west1
+              - us-west2
+              - us-west3
+              - us-west4
+              - northamerica-northeast1
+              - southamerica-east1
+              - europe-west1
+              - europe-west2
+              - europe-west3
+              - europe-west4
+              - europe-west6
+              - europe-central2
+              - europe-north1
+              - europe-southwest1
+              - asia-east1
+              - asia-east2
+              - asia-northeast1
+              - asia-northeast2
+              - asia-northeast3
+              - asia-south1
+              - asia-south2
+              - asia-southeast1
+              - asia-southeast2
+              - me-west1
+              - australia-southeast1
+              - australia-southeast2
       Machine Type:
         type: string
         default: "n1-standard"
         description: "Enter a machine type with preset amounts of vCPUs and memory that suit most workloads. For example, 'e2-medium'."
+      Keypairs Location:
+        type: string
+        default: ""
+      Additional Mgmt Networks:
+        type: string
+        default: ""
       Credentials Json:
         type: cloudshell.datatypes.Password
         default: ""
         description: ""
+      Custom Tags:
+        type: string
+        description: "Semi-colon separated list of tags that will be applied to the VM and all related objects created during the app deploy. Attribute supports the following syntax: [TagName]=[TagValue]; [TagName]=[TagValue]. For example: “Tag1=Val1;Tag2=Val2”"
     capabilities:
       concurrent_command_capability:
         type: cloudshell.capabilities.SupportConcurrentCommands
@@ -58,16 +96,51 @@ node_types:
             default: ""
             description: "The code of the GCP region to be used by this cloud provider
             resource. For example, 'us-central1'."
-    #        constraints:
-    #          - valid_values:
+            constraints:
+              - valid_values:
+                  - us-central1
+                  - us-east1
+                  - us-east4
+                  - us-west1
+                  - us-west2
+                  - us-west3
+                  - us-west4
+                  - northamerica-northeast1
+                  - southamerica-east1
+                  - europe-west1
+                  - europe-west2
+                  - europe-west3
+                  - europe-west4
+                  - europe-west6
+                  - europe-central2
+                  - europe-north1
+                  - europe-southwest1
+                  - asia-east1
+                  - asia-east2
+                  - asia-northeast1
+                  - asia-northeast2
+                  - asia-northeast3
+                  - asia-south1
+                  - asia-south2
+                  - asia-southeast1
+                  - asia-southeast2
+                  - me-west1
+                  - australia-southeast1
+                  - australia-southeast2
           Machine Type:
             type: string
             default: ""
             description: "Enter a machine type with preset amounts of vCPUs and memory that suit most workloads. For example, 'e2-medium'."
+          Keypairs Location:
+            type: string
+            default: ""
           Credentials Json:
             type: cloudshell.datatypes.Password
             default: ""
             description: ""
+          Custom Tags:
+            type: string
+            description: "Semi-colon separated list of tags that will be applied to the VM and all related objects created during the app deploy. Attribute supports the following syntax: [TagName]=[TagValue]; [TagName]=[TagValue]. For example: “Tag1=Val1;Tag2=Val2”"
     artifacts:
       icon:
         file: GCP.png
