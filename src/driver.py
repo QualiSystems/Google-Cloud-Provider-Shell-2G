@@ -90,7 +90,7 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
                 request,
                 cs_api
             )
-            deploy_flow_class, deploy_instance_type = get_deploy_params(request_actions)
+            deploy_flow_class = get_deploy_params(request_actions)
 
             deploy_flow = deploy_flow_class(
                 resource_config=resource_config,

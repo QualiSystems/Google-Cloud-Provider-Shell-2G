@@ -138,6 +138,9 @@ node_types:
             type: cloudshell.datatypes.Password
             default: ""
             description: ""
+          Additional Mgmt Networks:
+            type: string
+            default: ""
           Custom Tags:
             type: string
             description: "Semi-colon separated list of tags that will be applied to the VM and all related objects created during the app deploy. Attribute supports the following syntax: [TagName]=[TagValue]; [TagName]=[TagValue]. For example: “Tag1=Val1;Tag2=Val2”"
