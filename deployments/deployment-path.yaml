@@ -13,9 +13,9 @@ imports:
   - cloudshell_standard: cloudshell_cloud_provider_standard_1_0_1.yaml
 
 node_types:
-  vendor.resource.GCP Instance From Scratch:
+  vendor.resource.GCP Instance From Image:
     derived_from: cloudshell.nodes.CustomDeploymentOption
-    description: Create a single VM instance based on Public Image from scratch
+    description: Create a single VM instance based on certain image from scratch, supports Public, Custom and Marketplace Images
     properties:
       Region:
         type: string
@@ -45,7 +45,7 @@ node_types:
       Automatic Restart:
         type: string
         description: "Automatically restart VM instances if they are terminated for non-user-initiated reasons"
-        default: "On"
+        default: On
         constraints:
           - valid_values: [ On, Off ]
         tags: [user_input]
@@ -110,16 +110,6 @@ node_types:
         description: "Custom tags per instance, Comma separated values e.g:
         tag_name:tag_value1,tag_name2:tag_value2"
         tags: [ user_input ]
-      Network:
-        type: string
-        default: ""
-        description: "Determines what network traffic the instance can access"
-        tags: [ user_input ]
-      Sub Network:
-        type: string
-        default: ""
-        description: "Assigns the instance an IPv4 address from the subnetwork’s range."
-        tags: [ user_input ]
       Custom Tags:
         type: string
         default: ""
@@ -139,6 +129,11 @@ node_types:
         type: boolean
         default: false
         description: "If set to False the deployment will not wait for the VM to get an IP."
+        tags: [ user_input ]
+      Refresh IP Timeout:
+        type: integer
+        description: "Timeout for waiting when obtaining IP address (in seconds)"
+        default: 600
         tags: [ user_input ]
       Add Public IP:
         type: boolean
@@ -175,7 +170,7 @@ node_types:
         default: ""
         description: "The code of the GCP region to be used by this cloud provider
         resource. For example, 'us-central1'."
-        tags: [user_input]
+        tags: []
       Zone:
         type: string
         default: ""
@@ -198,40 +193,14 @@ node_types:
       Automatic Restart:
         type: string
         description: "Automatically restart VM instances if they are terminated for non-user-initiated reasons"
-        default: ""
+        default: On
         constraints:
           - valid_values: [ On, Off ]
         tags: [user_input]
-#      Disk Image Type:
-#        type: string
-#        description: "Boot Disks' image type that defines whether public or custom disk image will be used"
-#        default: "Public"
-#        constraints:
-#          - valid_values: [ Public, Custom ]
-#        tags: [user_input]
       OS Project:
         type: string
         description: "Operation System type."
         default: ""
-        constraints:
-          - valid_values:
-              - CenOS
-              - Container Optimized OS
-              - Debian
-              - Deep Learning on Linux
-              - Fedora CoreOS
-              - HPC VM Image
-              - openSUSE
-              - Red Hat Enterprise Linux
-              - Red Hat Enterprise Linux for SAP
-              - Rocky Linux
-              - SQL Server on Windows Server
-              - SUSE Linux Enterprise BYOS
-              - SUSE Linux Enterprise Server
-              - SUSE Linux Enterprise for SAP
-              - Ubuntu
-              - Ubuntu Pro
-              - Windows Server
         tags: [user_input]
       Disk Image:
         type: string
@@ -276,6 +245,11 @@ node_types:
         type: boolean
         default: false
         description: "If set to False the deployment will not wait for the VM to get an IP."
+        tags: [ user_input ]
+      Refresh IP Timeout:
+        type: integer
+        description: "Timeout for waiting when obtaining IP address (in seconds)"
+        default: 600
         tags: [ user_input ]
       Add Public IP:
         type: boolean
@@ -326,6 +300,11 @@ node_types:
         type: boolean
         default: false
         description: "If set to False the deployment will not wait for the VM to get an IP."
+        tags: [ user_input ]
+      Refresh IP Timeout:
+        type: integer
+        description: "Timeout for waiting when obtaining IP address (in seconds)"
+        default: 600
         tags: [ user_input ]
       Add Public IP:
         type: boolean

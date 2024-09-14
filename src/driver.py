@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING
 
 from cloudshell.cp.core.cancellation_manager import CancellationContextManager
@@ -17,6 +18,7 @@ from cloudshell.cp.gcp.flows.power_flow import GCPPowerFlow
 from cloudshell.cp.gcp.flows.prepare_infra_flow import PrepareGCPInfraFlow
 from cloudshell.cp.gcp.flows.refresh_ip_flow import GCPRefreshIPFlow
 from cloudshell.cp.gcp.flows.vm_details_flow import GCPGetVMDetailsFlow
+from cloudshell.cp.gcp.handlers.instance import InstanceHandler
 from cloudshell.cp.gcp.helpers import constants
 from cloudshell.cp.gcp.models.deploy_app import GCPDeployVMRequestActions, \
     InstanceFromMachineImageDeployApp, InstanceFromTemplateDeployApp, \
@@ -24,7 +26,8 @@ from cloudshell.cp.gcp.models.deploy_app import GCPDeployVMRequestActions, \
 from cloudshell.cp.gcp.models.deployed_app import (GCPDeployedVMRequestActions,
                                                    InstanceFromScratchDeployedApp,
                                                    InstanceFromTemplateDeployedApp,
-                                                   InstanceFromMachineImageDeployedApp)
+                                                   InstanceFromMachineImageDeployedApp,
+                                                   GCPGetVMDetailsRequestActions)
 from cloudshell.cp.gcp.resource_conf import GCPResourceConfig
 
 if TYPE_CHECKING:
@@ -186,7 +189,24 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
             ).refresh_ip()
 
     def DeleteInstance(self, context, ports):
-        pass
+        """Called during sandbox's teardown.
+
+        """
+        with LoggingSessionContext(context) as logger:
+            logger.info("Starting Remote Refresh IP command")
+            api = CloudShellSessionContext(context).get_api()
+            resource_config = GCPResourceConfig.from_context(
+                context,
+                api=api
+            )
+            resource = context.remote_endpoints[0]
+            actions = GCPDeployedVMRequestActions.from_remote_resource(
+                resource,
+                api
+            )
+            instance_data = json.loads(actions.deployed_app.vmdetails.uid)
+            instance_data["credentials"] = resource_config.credentials
+            InstanceHandler.get(**instance_data).delete()
 
     def PrepareSandboxInfra(self, context, request, cancellation_context):
         """
@@ -277,14 +297,16 @@ class GoogleCloudProviderShell2GDriver(ResourceDriverInterface):
                 api=api
             )
 
-            for deploy_app_cls in (
-                    InstanceFromScratchDeployApp,
+            for deployed_app_cls in (
+                    InstanceFromScratchDeployedApp,
+                    InstanceFromTemplateDeployedApp,
+                    InstanceFromMachineImageDeployedApp,
             ):
-                GetVMDetailsRequestActions.register_deployment_path(
-                    deploy_app_cls
+                GCPGetVMDetailsRequestActions.register_deployment_path(
+                    deployed_app_cls
                 )
 
-            request_actions = GetVMDetailsRequestActions.from_request(
+            request_actions = GCPGetVMDetailsRequestActions.from_request(
                 request=requests,
                 cs_api=api
             )
